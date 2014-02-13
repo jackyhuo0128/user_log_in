@@ -1,7 +1,4 @@
-Django==1.6.1
-PyRSS2Gen==1.0.0
-Twisted==12.2.0
-altgraph==0.10.1
-bdist-mpkg==0.4.4
-djangorestframework==2.3.12
-python-dateutil==1.5
+Django==1.6.2
+vboxapi==1.0
+virtualenv==1.11.2
+wsgiref==0.1.2
