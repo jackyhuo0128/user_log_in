@@ -1,90 +1,84 @@
-from django.shortcuts import get_object_or_404, render
+from django.views.decorators.csrf import csrf_exempt   ## for protection
 from logincount.UsersModel import UsersModel
-from django.http import HttpResponse, HttpResponseRedirect
-from django.template import Context, loader
-from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render
+from django.http import HttpResponse
 import json
-##from loginincoun.UsersModel import UsersModel
-from django.shortcuts import render_to_response
-from django.contrib.auth import authenticate, login
-from django.core.urlresolvers import reverse
 import unittest
-import logincount.tests as tests
+import logincount.testUnit as testUnit
 
 @csrf_exempt
 def add(request):
-	if request.method == 'POST': ## if it is Json.
-		if request.META['CONTENT_TYPE'] != 'application/json':
-			return index(request)
-		dataGot = json.loads(request.body)
-		if ('user' not in dataGot) or ('password' not in dataGot):
-			return index(request)
-		dataUser = UsersModel()
-		response = dataUser.add(dataGot['user'], dataGot['password'])
-		if response[0] == UsersModel.SUCCESS:
-			get = json.dumps({'errCode':response[0], 'count':response[1]})
-			return HttpResponse(get, content_type = 'application/json') 
-		get = json.dumps({'errCode':response[0]})
-		return HttpResponse(get, content_type = 'application/json')
-	return index(request)
+    if request.method == 'POST':
+        if request.META['CONTENT_TYPE'] != 'application/json':
+            return index(request)
+        content = json.loads(request.body)
+        if 'user' not in content or 'password' not in content:
+            return index(request)
+        dataUser = UsersModel()
+        response = dataUser.add(content['user'], content['password'])
+        if response[0] == UsersModel.SUCCESS: # success
+            outcome = json.dumps({'errCode' : response[0], 'count' : response[1]})
+            return HttpResponse(outcome, content_type = 'application/json')
+        else: 
+            outcome = json.dumps({'errCode' : response[0]})
+            return HttpResponse(outcome, content_type = 'application/json')
+    return index(request)
+
+
+
 
 @csrf_exempt
 def login(request):
-	if request.method =='POST':
-		if request.META['CONTENT_TYPE'] != 'application/json':
-			return index(request)
-		dataGot = json.loads(request.body)
-		if ('user' not in dataGot) or ('password' not in dataGot):
-			return index(request)
-		dataUser = UsersModel()
-		response = dataUser.login(dataGot['user'],dataGot['password'])
-		if response[0] == UsersModel.SUCCESS:
-			get = json.dumps({'errCode' : response[0], 'count' : response[1]})
-			return HttpResponse(get, content_type = 'application/json')
-		get = json.dumps({'errCode' : response[0]})
-        return HttpResponse(get, content_type = 'application/json')
-	return index(request)
-
-
-@csrf_exempt
-def reset(request):
-	if request.method =='POST':
-		if request.META['CONTENT_TYPE'] != 'application/json':
-			return index(request)
-		dataUser = UsersModel()
-		response = dataUser.TESTAPI_resetFixture()
-		if response == UsersModel.SUCCESS:
-			get = json.dumps({'errCode':response})
-			return HttpResponse(get, content_type = 'application/json' )
-	return index(resqest)
-
-
-"""
+    if request.method == 'POST': 
+        if request.META['CONTENT_TYPE'] != 'application/json':
+            return index(request)
+        content = json.loads(request.body)
+        if 'user' not in content or 'password' not in content:
+            return index(request)
+        dataUser = UsersModel()
+        response = dataUser.login(content['user'], content['password']) 
+            
+        if response[0] == UsersModel.SUCCESS: # success
+            outcome = json.dumps({'errCode' : response[0], 'count' : response[1]})
+            return HttpResponse(outcome, content_type = 'application/json')
+        else: 
+            outcome = json.dumps({'errCode' : response[0]})
+            return HttpResponse(outcome, content_type = 'application/json')
+    return index(request)
+    
 @csrf_exempt
 def unit(request):
     if request.method == 'POST':
-		if request.META['CONTENT_TYPE'] != 'application/json':
-			return index(request)
-		loadModule = unittest.TestLoader().loadTestsFromModule(testUnit)
-		fileToWrite = open("log", "w")
-		runTheTest = unittest.TextTestRunner(stream = fileToWrite)
-		result = runTheTest.run(fileToWrite)
-		sumError = len(result.failures) + len(result.errors)
-		total = result.testsRun
-		fileToWrite.close()
+        if request.META['CONTENT_TYPE'] != 'application/json':
+            return index(request)
+        loadModule = unittest.TestLoader().loadTestsFromModule(testUnit) # load the unit test module
+        fileToWrite = open("log", "w") # create a file to write to
+        runner = unittest.TextTestRunner(stream = fileToWrite, verbosity = 2) # set up the test runner
+        result = runner.run(loadModule) # start the test runner
+        sumError = len(result.errors) + len(result.failures)
+        total = result.testsRun
+        fileToWrite.close()
+        fileToRead = open("log", "r") # read back from the file
+        outcome = json.dumps({'nrFailed' : sumError, 'output' : fileToRead.read() ,'totalTests' : total})
+        fileToRead.close()
+        return HttpResponse(outcome, content_type = 'application/json')
+    return index(request)
 
-		fileToRead = open("log", "r")
-		get = json.dumps({'nrFailed' : sumError, 'output' : fileToRead.read(), 'totalTests' : total})
-		fileToRead.close()
-		return HttpResponse(get, content_type = 'application/json' )
-	#return index(request)
-"""
-def index(request):
+
     
-  return render(request, 'logincount/client.html', {})
-
-
-
-
-
-# Create your views here.
+    
+@csrf_exempt
+def reset(request):
+    if request.method == 'POST':
+        if request.META['CONTENT_TYPE'] != 'application/json':
+            return index(request)
+        content = UsersModel()
+        response = content.TESTAPI_resetFixture()   
+        if response == UsersModel.SUCCESS:
+            outcome = json.dumps({'errCode' : response})
+            return HttpResponse(outcome, content_type = 'application/json')
+    return index(request)
+    
+    
+def index(request):
+    return render(request, 'logincount/client.html', {})
