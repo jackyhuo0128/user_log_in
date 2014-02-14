@@ -5,9 +5,6 @@ import testLib
 
 
 class TestAdd(testLib.RestTestCase):
-    def tearDown(self):
-        self.makeRequest("/TESTAPI/resetFixture", method="POST")
-        super(TestAdd, self).tearDown()
 
 
     def assertResponse(self, respData, count, errCode):

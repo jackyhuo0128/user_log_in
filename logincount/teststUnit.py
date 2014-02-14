@@ -5,7 +5,7 @@ from logincount.models import User
 
 
 
-class testsUnit(TestCase):
+class testUnit(TestCase):
 	Err_Num = -1 
 	Good_Num = 1
 

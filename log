@@ -10,6 +10,6 @@ testNullNull (logincount.testUnit.testsUnit) ... ok
 testRestartFixture (logincount.testUnit.testsUnit) ... ok
 
 ----------------------------------------------------------------------
-Ran 10 tests in 0.048s
+Ran 10 tests in 0.042s
 
 OK
