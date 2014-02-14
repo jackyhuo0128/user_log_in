@@ -41,6 +41,12 @@ INSTALLED_APPS = (
     'logincount',
 )
 
+
+TEMPLATE_DIRS = (
+    'logincount/templates',
+)
+
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

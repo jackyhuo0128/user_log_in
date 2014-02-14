@@ -1,0 +1,15 @@
+testAdd (logincount.testUnit.testsUnit) ... ok
+testAddDuplicateUserName (logincount.testUnit.testsUnit) ... ok
+testAddLongPassWord (logincount.testUnit.testsUnit) ... ok
+testAddLongUserName (logincount.testUnit.testsUnit) ... ok
+testAddNullPassWord (logincount.testUnit.testsUnit) ... ok
+testAddNullUserName (logincount.testUnit.testsUnit) ... ok
+testLogin (logincount.testUnit.testsUnit) ... ok
+testLoginWrongPassWord (logincount.testUnit.testsUnit) ... ok
+testNullNull (logincount.testUnit.testsUnit) ... ok
+testRestartFixture (logincount.testUnit.testsUnit) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.035s
+
+OK
