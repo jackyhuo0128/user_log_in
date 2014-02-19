@@ -28,9 +28,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-TEMPLATE_DIRS = (
-    'logincount/templates2',
-)
+
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
