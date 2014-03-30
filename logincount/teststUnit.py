@@ -3,11 +3,26 @@ from UsersModel import UsersModel
 from logincount.models import User
 # Create your tests here.
 
-
+#google account: fittingroomtem@gmail.com
+#password : berkeleycs169
 
 class testUnit(TestCase):
-	Err_Num = -1 
-	Good_Num = 1
+    SUCCESS = 1
+
+    ERR_BAD_CREDENTIALS = -1
+    ERR_USER_EXISTS = -2
+    ERR_BAD_USERNAME = -3
+    ERR_BAD_PASSWORD = -4
+    Err_Num = -1
+    Good_Num = 1
+    MAX_USERNAME_LENGTH = 128
+    MAX_PASSWORD_LENGTH = 128
+
+    ERR_BAD_OTHERS = -5
+    ERR_BAD_USERID = -10
+    ERR_BAD_PRODUCTID = -11
+    ERR_BAD_CATEGORYID = -12
+
 
 	def setUp(self):
 		newOne = User(user = 'abcd', password = 'abcd' )

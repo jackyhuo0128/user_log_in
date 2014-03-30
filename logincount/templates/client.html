@@ -1,51 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+{% load staticfiles %}
 <html>
 <head>
-
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="{% static 'logincount/client.css' %}">
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
-<title>Virtual Fitting Room</title>
+<!-- This is all the page independent functions.  The ones which directly interact with the page are inlined below. -->
+<script type="text/javascript" src="{% static 'logincount/client.js' %}"></script>
 </head>
 
-<style>
-  .box {text-align: center;
-    color:#0404B4;
-    background-color:#FFBF00;
-    width: 300px;
-  }
-</style>
-
-<body>
-  <h1> 
-    <center>
-      <font color="#FFBF00">Welcome to Virtual Fitting Room!</font>
-    </center>
-  </h1>
-  <body background="http://www.priveedesigns.com/wp-content/uploads/2013/07/Torrid-01.jpg">
-</body>
-
 <center>
-<div id="login-page" class="box">
-  <div id="login-message" class="message"></div>
-  <center>
-    <form>
-      Username: <input id="login-username" type="text" name="username"><br>
-      Password: <input id="login-password" type="password" name="pwd"><br>
-      <input id="login-button" type="submit" value="Login">
-      <input id="add-user-button" type="submit" value="Add User">
-    </form>
-  </center>
-</div>
+  <div id="login-page" class="box">
+    <div id="login-message" class="message"></div>
+    <div id="login-request" class="message"></div>
+      <form method="post" action="">
 
-<div id="welcome-page" class="box">
-  <div id="welcome-message" class="message"></div>
-  <center>
-    <form>
-      <input type="submit" id="logout-button" value="Logout">
-    </form>
-  </center>
-</div>
+        <label>Username:</label> 
+        <input id="login-username" type="text" name="username" placeholder="Your name here"><br>
+
+        <label>Password :</label> 
+        <input id="login-password" type="password" name="pwd" placeholder="Your password here"><br>
+
+        <input id="login-button" type="submit" value="Login">
+        <input id="add-user-button" type="submit" value="Add User">
+      </form>
+    <div>
+      <img id="login-image" src="https://scontent-a-pao.xx.fbcdn.net/hphotos-ash2/t1/302729_4715979460924_2082443769_n.jpg"
+          alt="A image on login"  />
+    </div>
+  </div>
 </center>
+  <div id="welcome-page" class="box">
+    <div id="welcome-message" class="message"></div> 
+    <div id="center_1" class="centerDiv">
+      <form>
+        <input type="submit" id="logout-button" value="Logout">
+      </form>
+    </div>
+    <iframe id="welcome-video" src="http://www.youtube.com/embed/JE_YA7dSfWM?feature=player_detailpage" allowfullscreen></iframe>
+  </div>
+
+
 
 <script type="text/javascript">
 <!--
@@ -56,6 +52,7 @@ $('#welcome-page').hide()
 $('#login-username').val("")
 $('#login-password').val("")
 $('#login-message').html("Please enter your credentials below")
+$('#welcome-message').html("You should never see this text");
 
 /* setup the page so that only one of the forms is shown */
 $(document).ready(function() {
@@ -65,48 +62,19 @@ $(document).ready(function() {
 /* Note: These two functions are deliberately written to ignore the starting
    state.  This makes them slightly slower, but has the side effect of 
    restoring any invariant that gets accidentally broken.*/
-
-   var ERR_BAD_CREDENTIALS = -1;
-   var ERR_BAD_USERNAME = -3;
-   var ERR_USER_EXISTS = -2;
-   var ERR_BAD_PASSWORD  = -4;
-
-
-  function json_request(url, dict, suc, err) {
-      $.ajax({
-            type: 'POST',
-            url: url,
-            data: JSON.stringify(dict),
-            contentType: "application/json",
-            dataType: "json",
-            success: suc,
-            error: err
-        });
-    }
-
-
-function get_message_for_errcode(err) {
-
-
-    if( err == ERR_BAD_CREDENTIALS) {
-        return ("Invalid username and password combination. Please try again. ");
-    } else if( err == ERR_BAD_USERNAME) {
-        return ("The user name should not be empty and at most 128 characters long. Please try again.");
-    } else if( err == ERR_USER_EXISTS) {
-        return ("This user name already exists. Please try again.");
-    } else if( err == ERR_BAD_PASSWORD) {
-        return ("The password should be at most 128 characters long. Please try again");
-    } 
-}
-
 function show_login_page(message) {
-  if(! message) message = "Please enter your credentials below";
+  if(!message) message = "Please enter your credentials below"; 
+  else {
+    $('#login-request').hide()
+    $('#login-message').show()
+    $('#login-message').html(message) 
+  }
   $('#welcome-page').hide()
   $('#login-username').val("")
   $('#login-password').val("")
-  $('#login-message').html(message)
   $('#login-page').show()
 }
+
 
 function show_welcome_page(user, count) {
    $('#login-page').hide();
@@ -119,9 +87,11 @@ function handle_login_response(data, user) {
      c = data.count;
      show_welcome_page(user, c);
   } else {
+     if( debug_flag ) {
         if( data.errCode != ERR_BAD_CREDENTIALS ) {
            alert( 'Illegal error code encounted for this state');
         }
+     }
      show_login_page( get_message_for_errcode(data.errCode) );  
   }
 }
@@ -131,9 +101,11 @@ function handle_add_user_response(data, user) {
      c = data.count;
      show_welcome_page(user, c);
   } else {
+     if( debug_flag ) {
         if( data.errCode != ERR_BAD_USERNAME && data.errCode != ERR_USER_EXISTS ) {
            alert( 'Illegal error code encounted for this state');
         }
+     }
      show_login_page( get_message_for_errcode(data.errCode) );  
   }
 }
@@ -161,4 +133,7 @@ $('#logout-button').click(function() {
 });
 -->
 </script>
+
+<body>
+</body>
 </html>
